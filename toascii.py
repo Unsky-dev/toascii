@@ -4,12 +4,12 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
 # Converts an image to ASCII art with color
-def image_to_ascii_with_color(image, width=100):
+def image_to_ascii_with_color(image, width):
     image = image.convert('RGBA')  # Convert image to RGBA mode
     aspect_ratio = image.height / image.width
     height = int(aspect_ratio * width * 0.5)  # Calculate new height based on width
     image = image.resize((width, height))  # Resize image
-    pixels = np.array(image) 
+    pixels = np.array(image)
     
     ascii_chars = "$@B%8&W#*+=-:. "  # ASCII characters used for different gray levels
     ascii_art = []  # To store ASCII art lines
@@ -66,16 +66,21 @@ def ascii_to_png_with_color(ascii_art, color_map, output_image_path, font_path='
 # Main function
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python toascii.py CHEMININPUT")
+        print("Usage: python toascii.py CHEMININPUT [quality]")
         sys.exit(1)
     
     input_image_path = sys.argv[1]
     base_dir = os.path.dirname(input_image_path)
     base_name = os.path.splitext(os.path.basename(input_image_path))[0].replace(" ", "_")
+
+    # Set default quality (width)
+    quality = 100
+    if len(sys.argv) >= 3:
+        quality = int(sys.argv[2])  # Override default quality with user input
     
     input_image = Image.open(input_image_path)
     
-    ascii_art, color_map = image_to_ascii_with_color(input_image, width=200)
+    ascii_art, color_map = image_to_ascii_with_color(input_image, width=quality)
     ascii_output_path = os.path.join(base_dir, f"{base_name}_ascii.txt")
     save_ascii_art(ascii_art, ascii_output_path)
     
